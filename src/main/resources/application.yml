@@ -1,0 +1,14 @@
+
+spring:
+  application:
+    name: HomeMade2
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: Diyor2412
+    url: jdbc:postgresql://localhost:5432/homemade
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
