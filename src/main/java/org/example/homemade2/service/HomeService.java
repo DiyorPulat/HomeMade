@@ -7,6 +7,8 @@ import org.example.homemade2.dto.CreateHome;
 import org.example.homemade2.dto.GetResponseHomeDTO;
 import org.example.homemade2.dto.ResponseHomeDTO;
 import org.example.homemade2.entity.Home;
+import org.example.homemade2.exceptions.AlreadyExistException;
+import org.example.homemade2.exceptions.NotFoundException;
 import org.example.homemade2.mapper.HomeMapper;
 import org.example.homemade2.repository.HomeRepository;
 import org.springframework.stereotype.Service;
@@ -24,49 +26,35 @@ public class HomeService {
 
 
     @Transactional
-    public ResponseHomeDTO createHome(CreateHome createHome){
+    public ResponseHomeDTO createHome(CreateHome createHome) throws NotFoundException{
         ResponseHomeDTO responseHomeDTO = new ResponseHomeDTO();
         Optional<Home> check =  homeRepository.findHomeByClient_id(createHome.client_id());
         if(check.isEmpty()){
-            log.info("Staring adding a new home CLIENT ID : {}",createHome.client_id());
-            try {
+                log.info("Staring adding a new home CLIENT ID : {}",createHome.client_id());
                 homeRepository.save(HomeMapper.toEntity(createHome));
                 log.info("Created a new home CLIENT ID : {}",createHome.client_id());
                 responseHomeDTO.setIsSuccess(true);
                 responseHomeDTO.setMessage("Successfully created a new home");
-            }catch (Exception e){
-                log.error("Failed  creating a new home : {} ",e.getMessage());
-                responseHomeDTO.setIsSuccess(false);
-                responseHomeDTO.setMessage(e.getMessage());
-            }
         }else {
             log.info("A new home has already been created with the CLIENT ID : {}",createHome.client_id());
-            responseHomeDTO.setIsSuccess(false);
-            responseHomeDTO.setMessage("Home already exists");
+            throw new AlreadyExistException("Home already exists");
         }
         return responseHomeDTO;
     }
+
     @Transactional
-    public ResponseHomeDTO updateHome(CreateHome createHome){
+    public ResponseHomeDTO updateHome(CreateHome createHome,Long id) throws NotFoundException{
         ResponseHomeDTO responseHomeDTO = new ResponseHomeDTO();
-        Optional<Home> check =  homeRepository.findHomeByClient_id(createHome.client_id());
+        Optional<Home> check =  homeRepository.findById(id);
         if(check.isPresent()){
             log.info("Staring updating a home CLIENT ID : {}",createHome.client_id());
-
-            try {
                 homeRepository.save(HomeMapper.toEntity(createHome));
-                log.info("Updated a home CLIENT ID : {}",createHome.client_id());
+                log.info("Updated a home CLIENT ID : {}",id);
                 responseHomeDTO.setIsSuccess(true);
                 responseHomeDTO.setMessage("Successfully updated a home");
-            }catch (Exception e){
-                log.error("Failed  updating a home : {} ",e.getMessage());
-                responseHomeDTO.setIsSuccess(false);
-                responseHomeDTO.setMessage(e.getMessage());
-            }
         }else {
-            log.info(" A Home isn't exist with the CLIENT ID : {}",createHome.client_id());
-            responseHomeDTO.setIsSuccess(false);
-            responseHomeDTO.setMessage("Home does not exist");
+            log.info(" A Home isn't exist with the CLIENT ID : {}",id);
+            throw new NotFoundException("Home does not exist");
         }
         return responseHomeDTO;
 
@@ -78,18 +66,15 @@ public class HomeService {
     public ResponseHomeDTO deleteHome(Long id){
         ResponseHomeDTO responseHomeDTO = new ResponseHomeDTO();
         log.info("Staring deleting a home HOME ID : {}",id);
-
-        try {
-
+        Optional<Home> check =  homeRepository.findById(id);
+        if(check.isPresent()){
             homeRepository.deleteById(id);
             log.info("Deleted a home HOME ID : {}",id);
             responseHomeDTO.setIsSuccess(true);
             responseHomeDTO.setMessage("Successfully deleted a home");
-
-        }catch (Exception e){
-            log.error("Failed  deleting a home : {} ",e.getMessage());
-            responseHomeDTO.setIsSuccess(false);
-            responseHomeDTO.setMessage(e.getMessage());
+        }else {
+            log.info(" A  Home isn't exist with the CLIENT ID : {}",id);
+            throw new NotFoundException("Home does not exist");
         }
         return responseHomeDTO;
 
