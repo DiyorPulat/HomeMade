@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,18 @@ public class FavouritePayment {
     private HomeDetails homeDetails;
     @Column(name = "amount")
     private Long amount;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FavouritePayment that = (FavouritePayment) o;
+        return  Objects.equals(homeDetails, that.homeDetails);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, homeDetails, amount);
+    }
 }
