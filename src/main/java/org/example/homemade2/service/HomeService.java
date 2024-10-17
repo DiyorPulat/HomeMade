@@ -84,7 +84,8 @@ public class HomeService {
 
         GetResponseHomeDTO responseHomeDTO = new GetResponseHomeDTO();
         log.info("Staring retrieving a home HOME ID : {}",id);
-        try {
+        Optional<Home> check =  homeRepository.findById(id);
+        if(check.isPresent()){
             Home home = homeRepository.getReferenceById(id);
             log.info("Retrieved a home HOME ID : {}",id);
             responseHomeDTO.setName(home.getName());
@@ -92,10 +93,9 @@ public class HomeService {
             responseHomeDTO.setHomeImg(home.getHomeImg());
             responseHomeDTO.setIsSuccess(true);
             responseHomeDTO.setMessage("Successfully retrieved a home");
-        }catch (Exception e){
-            log.error("Failed  retrieving a home : {} ",e.getMessage());
-            responseHomeDTO.setIsSuccess(false);
-            responseHomeDTO.setMessage(e.getMessage());
+        }else {
+            log.error("Failed  retrieving a home : {} ",id);
+            throw new NotFoundException("Home does not exist");
         }
         return responseHomeDTO;
     }
