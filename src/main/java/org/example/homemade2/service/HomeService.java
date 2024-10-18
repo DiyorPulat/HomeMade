@@ -27,16 +27,15 @@ public class HomeService {
 
     @Transactional
     public ResponseHomeDTO createHome(CreateHome createHome) throws NotFoundException{
+        log.info("createHome : {}",createHome.client_id());
         ResponseHomeDTO responseHomeDTO = new ResponseHomeDTO();
         Optional<Home> check =  homeRepository.findHomeByClient_id(createHome.client_id());
         if(check.isEmpty()){
-                log.info("Staring adding a new home CLIENT ID : {}",createHome.client_id());
                 homeRepository.save(HomeMapper.toEntity(createHome));
                 log.info("Created a new home CLIENT ID : {}",createHome.client_id());
                 responseHomeDTO.setIsSuccess(true);
                 responseHomeDTO.setMessage("Successfully created a new home");
         }else {
-            log.info("A new home has already been created with the CLIENT ID : {}",createHome.client_id());
             throw new AlreadyExistException("Home already exists");
         }
         return responseHomeDTO;
@@ -47,8 +46,10 @@ public class HomeService {
         ResponseHomeDTO responseHomeDTO = new ResponseHomeDTO();
         Optional<Home> check =  homeRepository.findById(id);
         if(check.isPresent()){
+            Home home = HomeMapper.toEntity(createHome);
+            home.setId(id);
             log.info("Staring updating a home CLIENT ID : {}",createHome.client_id());
-                homeRepository.save(HomeMapper.toEntity(createHome));
+                homeRepository.save(home);
                 log.info("Updated a home CLIENT ID : {}",id);
                 responseHomeDTO.setIsSuccess(true);
                 responseHomeDTO.setMessage("Successfully updated a home");

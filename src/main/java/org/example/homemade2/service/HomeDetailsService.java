@@ -90,6 +90,9 @@ public class HomeDetailsService {
         ResponseHomeDetailsDTO response = new ResponseHomeDetailsDTO();
         Optional<HomeDetails> homeDetails = homeDetailsRepository.findById(id);
         if (homeDetails.isPresent()) {
+            HomeDetails homeDetails1 = homeDetails.get();
+            homeDetails1.setHome(null);
+            homeDetailsRepository.save(homeDetails1);
             homeDetailsRepository.deleteById(id);
             log.info("Deleted homeDetails successfully");
             response.setIsSuccess(true);

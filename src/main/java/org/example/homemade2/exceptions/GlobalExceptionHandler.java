@@ -27,7 +27,17 @@ public class GlobalExceptionHandler {
     @ResponseStatus(code = HttpStatus.CONFLICT)
     public ResponseEntity<ExceptionDTO> alreadyExistException(Exception e) {
         ExceptionDTO response = new ExceptionDTO(409 , new Date(),e.getMessage());
-        log.error(" Already exist  :{}",e.getMessage());
+        log.error("alreadyExistException  :{}",e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+
+
+    @ExceptionHandler(ShouldBeUniqueException.class)
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    public ResponseEntity<ExceptionDTO> ShouldBeUniqueException(Exception e) {
+        ExceptionDTO response = new ExceptionDTO(409 , new Date(),e.getMessage());
+        log.error("ShouldBeUniqueException  :{}",e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 }

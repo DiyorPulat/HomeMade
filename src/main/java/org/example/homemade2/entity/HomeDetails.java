@@ -15,6 +15,7 @@ import java.util.Objects;
 @Setter
 @Table(name = "home_details")
 public class HomeDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
